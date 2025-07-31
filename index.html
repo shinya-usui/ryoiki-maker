@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>領域発動メーカー</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #fff;
+            font-family: 'Georgia', '游明朝', 'YuMincho', serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #8b5cf6;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3);
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #8b5cf6, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+            color: #fbbf24;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            font-size: 1em;
+            border: 2px solid #8b5cf6;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-family: inherit;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #fbbf24;
+            box-shadow: 0 0 20px rgba(251, 191, 36, 0.3);
+        }
+        
+        select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #8b5cf6, #a855f7);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            font-weight: bold;
+            margin: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+        }
+        
+        .generate-button {
+            margin-top: 20px;
+        }
+        
+        .result {
+            margin-top: 40px;
+            padding: 30px;
+            background: rgba(139, 92, 246, 0.1);
+            border-radius: 15px;
+            border: 1px solid #8b5cf6;
+            display: none;
+            text-align: left;
+        }
+        
+        .rarity-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+        
+        .rarity-stars {
+            font-size: 1.5em;
+            margin-right: 10px;
+        }
+        
+        .star-1 { color: #6b7280; }
+        .star-2 { color: #10b981; }
+        .star-3 { color: #3b82f6; }
+        .star-4 { color: #a855f7; }
+        .star-5 { 
+            background: linear-gradient(45deg, #dc2626, #f59e0b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 3px #f59e0b); }
+            to { filter: drop-shadow(0 0 10px #dc2626); }
+        }
+        
+        .domain-name {
+            font-size: 1.8em;
+            color: #fbbf24;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .reading {
+            font-size: 0.9em;
+            color: #9ca3af;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .domain-description {
+            font-size: 1em;
+            line-height: 1.8;
+            color: #e5e7eb;
+            margin-bottom: 20px;
+        }
+        
+        .domain-effect {
+            font-size: 1em;
+            line-height: 1.8;
+            color: #e5e7eb;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #fbbf24;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 10px;
+        }
+        
+        .action-button {
+            background: linear-gradient(45deg, #059669, #10b981);
+            padding: 12px 25px;
+            font-size: 1em;
+            margin: 5px;
+        }
+        
+        .share-button {
+            background: linear-gradient(45deg, #dc2626, #ef4444);
+        }
+        
+        .download-button {
+            background: linear-gradient(45deg, #7c3aed, #8b5cf6);
+        }
+        
+        .copy-button {
+            background: linear-gradient(45deg, #059669, #10b981);
+        }
+        
+        .gpts-button {
+            background: linear-gradient(45deg, #0ea5e9, #3b82f6);
+        }
+        
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(16, 185, 129, 0.95);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            z-index: 1000;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-button {
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>領域発動メーカー</h1>
+        
+        <div class="input-group">
+            <label for="skill">あなたの得意分野・専門性</label>
+            <input type="text" id="skill" placeholder="例：プログラミング、料理、音楽、営業...">
+        </div>
+        
+        <div class="input-group">
+            <label for="personality">あなたの性格・特徴</label>
+            <select id="personality">
+                <option value="">選択してください</option>
+                <option value="完璧主義">完璧主義</option>
+                <option value="創造的">創造的</option>
+                <option value="情熱的">情熱的</option>
+                <option value="冷静">冷静</option>
+                <option value="几帳面">几帳面</option>
+                <option value="自由奔放">自由奔放</option>
+                <option value="論理的">論理的</option>
+                <option value="直感的">直感的</option>
+                <option value="協調性重視">協調性重視</option>
+                <option value="独立志向">独立志向</option>
+                <option value="慎重">慎重</option>
+                <option value="大胆">大胆</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="element">好きな要素・イメージ</label>
+            <select id="element">
+                <option value="">選択してください</option>
+                <option value="炎">炎・火</option>
+                <option value="水">水・氷</option>
+                <option value="風">風・嵐</option>
+                <option value="土">土・山</option>
+                <option value="雷">雷・電気</option>
+                <option value="光">光・聖</option>
+                <option value="闇">闇・影</option>
+                <option value="森">森・自然</option>
+                <option value="星">星・宇宙</option>
+                <option value="機械">機械・金属</option>
+                <option value="音">音・音楽</option>
+                <option value="時">時・空間</option>
+            </select>
+        </div>
+        
+        <button class="generate-button" onclick="generateDomain()">領域発動</button>
+        
+        <div class="result" id="result">
+            <div class="rarity-badge">
+                <div class="rarity-stars" id="rarityStars"></div>
+                <div id="rarityText"></div>
+            </div>
+            <div class="domain-name" id="domainName"></div>
+            <div class="reading" id="reading"></div>
+            <div class="domain-description" id="domainDescription"></div>
+            <div class="domain-effect" id="domainEffect"></div>
+            
+            <div class="action-buttons">
+                <button class="action-button copy-button" onclick="copyToClipboard()">📋 コピー</button>
+                <button class="action-button download-button" onclick="downloadAsText()">💾 テキスト保存</button>
+                <button class="action-button download-button" onclick="downloadAsImage()">🖼️ 画像保存</button>
+                <button class="action-button gpts-button" onclick="openApp()">🔗 アプリで診断</button>
+                <button class="action-button share-button" onclick="shareToTwitter()">🐦 Xでシェア</button>
+                <button class="action-button share-button" onclick="shareGeneral()">📤 シェア</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="success-message" id="successMessage"></div>
+    
+    <!-- 非表示のCanvas要素（画像生成用） -->
+    <canvas id="imageCanvas" style="display: none;"></canvas>
+
+    <script>
+        let currentResult = null;
+        
+        // 🎯 HTMLアプリのURL（実際のURLに変更してください）
+        const APP_URL = 'https://example.com/ryoiki-maker'; // ←後で実際のURLに変更
+
+        // 🎯 分野キーワード正規化辞書（より細かく分類）
+        const skillMapping = {
+            // IT・技術系
+            'プログラミング': 'プログラミング', 'プログラム': 'プログラミング', 'コーディング': 'プログラミング',
+            'web': 'Web開発', 'ウェブ': 'Web開発', 'ホームページ': 'Web開発',
+            'デザイン': 'デザイン', '設計': 'デザイン', 'ui': 'デザイン', 'ux': 'デザイン',
+            'ai': 'AI・機械学習', '人工知能': 'AI・機械学習', '機械学習': 'AI・機械学習',
+            'データ': 'データ分析', '分析': 'データ分析', '統計': 'データ分析',
+            
+            // ビジネス系  
+            '営業': '営業', 'セールス': '営業', '販売': '営業', '接客': '営業',
+            'マーケティング': 'マーケティング', '広告': 'マーケティング', 'sns': 'マーケティング',
+            '経営': '経営・管理', '管理': '経営・管理', 'マネジメント': '経営・管理',
+            '企画': '企画・立案', '提案': '企画・立案', '戦略': '企画・立案',
+            '会計': '会計・経理', '経理': '会計・経理', '簿記': '会計・経理',
+            
+            // クリエイティブ系
+            '音楽': '音楽', 'ミュージック': '音楽', '楽器': '音楽', '作曲': '音楽',
+            '料理': '料理', 'クッキング': '料理', '調理': '料理', 'レシピ': '料理',
+            '絵': 'アート・イラスト', '描画': 'アート・イラスト', 'イラスト': 'アート・イラスト',
+            '写真': '写真・映像', '動画': '写真・映像', '映像': '写真・映像',
+            '文章': '文章・執筆', '執筆': '文章・執筆', 'ライティング': '文章・執筆',
+            
+            // 専門職・技術
+            '医療': '医療・看護', '看護': '医療・看護', '薬': '医療・看護',
+            '教育': '教育・指導', '指導': '教育・指導', '先生': '教育・指導',
+            '法律': '法律・司法', '弁護士': '法律・司法', '司法': '法律・司法',
+            
+            // スポーツ・身体
+            'スポーツ': 'スポーツ', '運動': 'スポーツ', '筋トレ': 'スポーツ',
+            'ダンス': 'ダンス・パフォーマンス', 'パフォーマンス': 'ダンス・パフォーマンス',
+            
+            // 学術・研究
+            '研究': '研究・学術', '学術': '研究・学術', '論文': '研究・学術',
+            '数学': '数学・理系', '物理': '数学・理系', '化学': '数学・理系',
+            '言語': '語学・翻訳', '語学': '語学・翻訳', '翻訳': '語学・翻訳'
+        };
+
+        // 🎯 分野を正規化する関数
+        function normalizeSkill(inputSkill) {
+            const skill = inputSkill.trim().toLowerCase();
+            
+            // 長すぎる場合は汎用的な表現に
+            if (inputSkill.length > 30) {
+                return 'その道のプロ';
+            }
+            
+            // キーワードマッピングをチェック
+            for (let [key, value] of Object.entries(skillMapping)) {
+                if (skill.includes(key.toLowerCase())) {
+                    return value;
+                }
+            }
+            
+            // 10文字以上の場合は「専門分野」に
+            if (inputSkill.length > 10) {
+                return '専門分野';
+            }
+            
+            // そのまま使用
+            return inputSkill;
+        }
+
+        // 🎯 分野別の具体的な領域設定（大幅に面白く！）
+        const domainSettings = {
+            'プログラミング': {
+                environments: [
+                    'コンパイルエラーが物理的に存在しないデジタル神殿',
+                    'バグが美しい蝶に変わるコードの楽園',
+                    'Stack Overflowの全知識が脳に直結する聖域',
+                    'デバッグが自動で完了する無限ループの迷宮',
+                    'すべてのAPIが完璧なドキュメントを持つ天国'
+                ],
+                effects: [
+                    'タイポが入力した瞬間に自動修正され、変数名が最適化される',
+                    'フレームワークが勝手に最新版にアップデートされ、互換性問題が消滅する',
+                    'コードレビューで指摘される箇所が光って見え、修正案が頭に浮かぶ',
+                    'Gitのコンフリクトがポエムのような美しい文章で解決される',
+                    'プルリクエストが必ず一発でマージされ、CIが永遠にグリーンになる'
+                ]
+            },
+            'Web開発': {
+                environments: [
+                    'レスポンシブデザインが自動で最適化されるブラウザ王国',
+                    'CSSが3Dで可視化され、思考だけでスタイリングできる空間',
+                    'SEOスコアが100点満点で固定される検索エンジン天国',
+                    'ページ読み込み速度が光速を超越するサーバー異次元'
+                ],
+                effects: [
+                    'IEでも完璧に表示され、ブラウザ互換性の概念が消失する',
+                    'JavaScriptエラーがジャズのアドリブのように美しい音楽になる',
+                    'モバイルファーストが物理法則となり、デスクトップが自動追従する'
+                ]
+            },
+            'デザイン': {
+                environments: [
+                    '黄金比が空中に浮かび、配置が自動で最適化される美の神殿',
+                    '色相環が立体的に回転し、完璧な配色が降りてくる虹の宮殿',
+                    'フォントが生命を持ち、最適な組み合わせを提案してくる文字の森',
+                    'ユーザビリティが可視化され、UXの改善点が光る体験の結界'
+                ],
+                effects: [
+                    'クライアントの「なんかいい感じに」が具体的な指示として理解できる',
+                    'デザインツールが思考と同期し、頭の中のイメージが自動で画面に現れる',
+                    'トレンドを10年先まで予知でき、時代を超越したデザインが生まれる'
+                ]
+            },
+            '料理': {
+                environments: [
+                    '食材が最適な調理法を囁き、包丁が勝手に美しく切る魔法の厨房',
+                    '調味料が自動で黄金比率を測り、完璧な味付けをする錬金術ラボ',
+                    '火加減が目視できる炎の精霊が住む神聖なキッチン',
+                    '料理の完成図が3Dホログラムで表示される未来の調理場'
+                ],
+                effects: [
+                    '「適量」「少々」「お好み」の正確な分量が数値で表示される',
+                    '失敗料理が奇跡的に世界一の美味しさに化学変化する',
+                    '食べた人の心の傷を癒やし、母の味を完璧に再現できる'
+                ]
+            },
+            '営業': {
+                environments: [
+                    '相手の本音が吹き出しで可視化される透明な商談室',
+                    'WIN-WINの精神が物質化し、双方の利益が光る調和の空間',
+                    '契約成立確率がリアルタイムで表示される確率操作の結界',
+                    '信頼度がゲージで見える人間関係ステータス画面'
+                ],
+                effects: [
+                    '「検討します」の真意が翻訳され、本当の課題が浮き彫りになる',
+                    '商品の価値が顧客の心に直接響き、必要性が体感として伝わる',
+                    '競合他社の提案書が白紙に見え、自分の提案だけが輝いて見える'
+                ]
+            },
+            '音楽': {
+                environments: [
+                    '音符が宙に舞い、完璧なメロディを織りなす天使の音楽堂',
+                    '楽器が意思を持ち、演奏者の感情を自動で表現する共鳴の神殿',
+                    '不協和音が存在せず、どんな音も美しいハーモニーになる調和の王国'
+                ],
+                effects: [
+                    '楽譜が読めなくても脳内に音符が直接表示される',
+                    '聴衆の心拍数が演奏に同調し、会場全体が一つの楽器になる',
+                    '即興演奏で宇宙の真理を表現し、聞いた人の魂が浄化される'
+                ]
+            },
+            'マーケティング': {
+                environments: [
+                    '消費者インサイトが透視でき、隠れたニーズが光る市場分析の聖域',
+                    'バイラル係数が可視化され、拡散の方程式が浮かぶSNS神殿',
+                    'ROI が100%保証される広告効果の魔法円陣'
+                ],
+                effects: [
+                    'ターゲット層の心理が手に取るように分かり、刺さるコピーが自動生成される',
+                    '競合分析が瞬時に完了し、市場の隙間が3Dマップで表示される',
+                    'インフルエンサーが自然に商品を紹介したくなる魅力オーラが発生する'
+                ]
+            },
+            '医療・看護': {
+                environments: [
+                    '病気が色で可視化され、最適な治療法が光る診断の聖域',
+                    '患者の痛みが共感として伝わり、癒やしの力が手から発する治療の神殿'
+                ],
+                effects: [
+                    '診断が100%正確になり、見落としが物理的に不可能になる',
+                    '患者の不安が自動で和らぎ、治癒力が自然に向上する'
+                ]
+            },
+            '教育・指導': {
+                environments: [
+                    '生徒の理解度が数値で表示され、最適な教え方が自動提案される学びの神殿',
+                    '知識が光の粒子となって生徒の脳に直接転送される智慧の結界'
+                ],
+                effects: [
+                    'どんな難しい概念も生徒のレベルに自動で翻訳され、必ず理解してもらえる',
+                    '学習意欲が物質化し、やる気のない生徒も自然に興味を持ち始める'
+                ]
+            }
+        };
+
+        const domainTemplates = {
+            'プログラミング': {
+                chars: ['無謬', '符號', '演算', '制御', '解析', '構築', '実装', '最適', '効率', '論理'],
+                environments: ['デジタル空間', 'コードの海', '演算処理場', 'データの迷宮', 'アルゴリズムの神殿'],
+                abilities: ['バグが瞬時に特定され', 'セキュリティホールが露呈し', '最適化が自動実行され', 'システムエラーが強制修正される']
+            },
+            '料理': {
+                chars: ['至極', '調理', '饗宴', '味覚', '食材', '烹飪', '美味', '芳醇', '絶品', '匠技'],
+                environments: ['香りに満ちた厨房', '食材が舞い踊る空間', '調味料の結界', '美食の聖域'],
+                abilities: ['食材の特性が最大化され', '調理技術が神域に達し', '味覚が極限まで研ぎ澄まされ', '栄養価が完璧に調整される']
+            },
+            '音楽': {
+                chars: ['絶響', '律動', '和音', '旋律', '共鳴', '協奏', '交響', '調律', '音階', '韻律'],
+                environments: ['音波が可視化された空間', '楽器が浮遊する音楽堂', '和音が結晶化した世界', 'リズムが支配する次元'],
+                abilities: ['音程が完璧に調整され', 'リズム感が絶対的となり', '和音の美しさが極限に達し', '聴覚が超人的に向上する']
+            },
+            '営業': {
+                chars: ['説得', '交渉', '信頼', '魅惑', '契約', '商談', '成約', '誘導', '心理', '駆引'],
+                environments: ['信頼関係が可視化された会議室', '心理状態が透けて見える空間', '商談成功率100%の結界'],
+                abilities: ['相手の本音が読み取れ', '説得力が圧倒的に向上し', '信頼関係が瞬時に構築され', '商談が必ず成功する']
+            },
+            'デザイン': {
+                chars: ['美學', '創造', '視覺', '構成', '色彩', '造形', '審美', '意匠', '装飾', '芸術'],
+                environments: ['色彩が踊る創作空間', '美的センスが物質化した世界', '完璧な黄金比の結界'],
+                abilities: ['美的感覚が極限まで研ぎ澄まされ', '色彩感覚が超人的となり', '創作物が必ず傑作となる']
+            },
+            'マーケティング': {
+                chars: ['戦略', '分析', '市場', '顧客', '心理', '訴求', '効果', '成果', '洞察', '革新'],
+                environments: ['市場データが可視化された空間', '顧客心理が透けて見える結界', 'マーケット戦略の聖域'],
+                abilities: ['市場分析が完璧となり', '顧客ニーズが手に取るように分かり', 'マーケティング効果が最大化される']
+            }
+        };
+
+        // 🎯 性格・要素による修飾子
+        const personalityModifiers = {
+            '完璧主義': ['一切の妥協なく', '神レベルの精度で', '完璧を超越した完璧さで'],
+            '創造的': ['芸術的インスピレーションと共に', '想像を絶する創造力で', '無から有を生み出すように'],
+            '情熱的': ['燃えるような情熱で', '魂を込めて', '心の炎と共に'],
+            '冷静': ['氷のような冷静さで', '完璧な判断力と共に', '一切動揺することなく'],
+            '几帳面': ['システマティックに', '完璧な秩序で', '規則正しく'],
+            '自由奔放': ['既成概念を打ち破って', '制約を超越して', '自由自在に'],
+            '論理的': ['論理的完璧性で', '科学的根拠と共に', '矛盾のない理論で'],
+            '直感的': ['鋭い直感で', '霊感的ひらめきで', '第六感の導きで'],
+            '協調性重視': ['チームワークの力で', '完璧な調和で', '全員一致の結束で'],
+            '独立志向': ['独自の道を切り開いて', '孤高の強さで', '誰にも頼らず'],
+            '慎重': ['万全の準備と共に', 'リスクを完全回避して', '慎重かつ確実に'],
+            '大胆': ['大胆不敵に', 'リスクを恐れず', '勇気と共に']
+        };
+
+        const elementModifiers = {
+            '炎': ['業火の勢いで', '炎の浄化力で', '燃え盛る情熱で'],
+            '水': ['水の流れで清め', '深淵の力で', '氷の鋭さで'],
+            '風': ['風の速さで', 'そよ風の優しさで', '嵐の激しさで'],
+            '土': ['大地の安定感で', '山の重厚さで', '土の恵みで'],
+            '雷': ['電光石火の速さで', '稲妻の輝きで', '雷の一撃で'],
+            '光': ['希望の輝きで', '真実を照らす光で', '聖なる光で'],
+            '闇': ['静寂の力で', '影の神秘で', '深淵なる闇で'],
+            '森': ['自然の生命力で', '大樹の力で', '森の知恵で'],
+            '星': ['宇宙の力で', '天体の調和で', '星座の導きで'],
+            '機械': ['精密機械の正確さで', 'テクノロジーの力で', 'システムの効率で'],
+            '音': ['音波の振動で', 'ハーモニーの美しさで', 'リズムの力で'],
+            '時': ['時の流れを操り', '永遠の瞬間で', '過去と未来を繋いで']
+        };
+
+        // 性格と要素の特別な組み合わせ（4-5文字に調整）
+        const specialCombinations = {
+            '完璧主義_炎': { chars: ['完炎', '精火', '無瑕炎'], environment: '完璧に制御された業火が', ability: '一切の妥協なく完全燃焼し', stars: 5 },
+            '冷静_炎': { chars: ['冷炎', '氷火', '静炎'], environment: '矛盾する氷と炎が調和した', ability: '冷静さを保ちながら激情を操り', stars: 4 },
+            '自由奔放_機械': { chars: ['自機', '奔機', '暴機'], environment: '制御を振り切った機械たちが踊る', ability: '機械的精密さと自由な発想が融合し', stars: 4 },
+            '慎重_雷': { chars: ['静雷', '慎雷', '深雷'], environment: '計算し尽くされた雷鳴が響く', ability: '慎重に狙いを定めた雷撃が必中し', stars: 3 },
+            '情熱的_氷': { chars: ['熱氷', '炎氷', '情氷'], environment: '熱い心と冷たい氷が共存する', ability: '情熱的な心で氷を操り', stars: 4 },
+            '論理的_闇': { chars: ['論闇', '理闇', '合闇'], environment: '論理的に構築された完全な闇が', ability: '理性的思考で闇を完全制御し', stars: 3 },
+            '直感的_光': { chars: ['直光', '感光', '霊光'], environment: '直感が光となって可視化された', ability: '直感的洞察が神の光となり', stars: 5 },
+            '几帳面_嵐': { chars: ['整嵐', '規嵐', '序嵐'], environment: '完璧に整理された嵐が', ability: '几帳面さで嵐すら制御し', stars: 3 },
+            '大胆_森': { chars: ['勇森', '胆森', '果森'], environment: '勇敢に成長し続ける森林が', ability: '大胆不敵に森の力を解放し', stars: 2 },
+            '独立志向_星': { chars: ['孤星', '独星', '単星'], environment: '一人きりの宇宙が', ability: '孤独な強さで星々を支配し', stars: 4 },
+            '協調性重視_音': { chars: ['協音', '調音', '和音'], environment: '完璧なハーモニーが響く', ability: '全ての音が調和して共鳴し', stars: 3 },
+            '創造的_時': { chars: ['創時', '想時', '発時'], environment: '創造力が時間を歪める', ability: '創造的発想で時の流れを操り', stars: 5 }
+        };
+
+        const suffixes = ['境', '域', '界', '殿', '閣', '宮', '廟', '庭', '堂', '院', '館', '楼', '山', '処'];
+
+        const rarityNames = {
+            1: 'コモン',
+            2: 'アンコモン', 
+            3: 'レア',
+            4: 'エピック',
+            5: 'レジェンダリー'
+        };
+
+        // 🎯 修正済み漢字読み辞書（完全版）
+        const kanjiReadings = {
+            // 基本文字（あ行〜わ行）
+            '無': 'む', '謬': 'びゅう', '符': 'ふ', '號': 'ごう', '境': 'きょう',
+            '至': 'し', '極': 'きょく', '調': 'ちょう', '理': 'り', '域': 'いき',
+            '絶': 'ぜつ', '響': 'きょう', '律': 'りつ', '動': 'どう', '界': 'かい',
+            '説': 'せつ', '得': 'とく', '交': 'こう', '渉': 'しょう', '殿': 'でん',
+            '美': 'び', '學': 'がく', '創': 'そう', '造': 'ぞう', '閣': 'かく',
+            '限': 'げん', '対': 'たい', '完': 'かん', '全': 'ぜん', '宮': 'ぐう',
+            '高': 'こう', '則': 'そく', '廟': 'びょう', '庭': 'てい', '堂': 'どう',
+            '院': 'いん', '館': 'かん', '楼': 'ろう', '山': 'ざん', '処': 'しょ',
+            '演': 'えん', '算': 'さん', '制': 'せい', '御': 'ぎょ', '解': 'かい',
+            '析': 'せき', '構': 'こう', '築': 'ちく', '実': 'じつ', '装': 'そう',
+            '最': 'さい', '適': 'てき', '効': 'こう', '率': 'りつ', '論': 'ろん',
+            '飪': 'じん', '味': 'み', '覚': 'かく', '材': 'ざい', '烹': 'ほう',
+            '芳': 'ほう', '醇': 'じゅん', '品': 'ひん', '匠': 'しょう', '技': 'ぎ',
+            '和': 'わ', '音': 'おん', '旋': 'せん', '共': 'きょう', '鳴': 'めい',
+            '協': 'きょう', '奏': 'そう', '韻': 'いん', '信': 'しん', '頼': 'らい',
+            '惑': 'わく', '約': 'やく', '商': 'しょう', '談': 'だん', '成': 'せい',
+            '誘': 'ゆう', '導': 'どう', '心': 'しん', '駆': 'く', '引': 'いん',
+            '視': 'し', '覺': 'かく', '色': 'しき', '彩': 'さい', '形': 'けい',
+            '審': 'しん', '意': 'い', '芸': 'げい', '術': 'じゅつ', '覇': 'は',
+            '道': 'どう', '魅': 'み', '精': 'せい', '密': 'みつ', '瑕': 'か',
+            '発': 'はつ', '想': 'そう', '独': 'どく', '熱': 'ねつ', '情': 'じょう',
+            '激': 'げき', '炎': 'えん', '魂': 'こん', '冷': 'れい', '静': 'せい',
+            '沈': 'ちん', '着': 'ちゃく', '氷': 'ひょう', '規': 'き', '秩': 'ちつ',
+            '序': 'じょ', '整': 'せい', '然': 'ぜん', '自': 'じ', '由': 'ゆう',
+            '奔': 'ほん', '放': 'ほう', '拘': 'こう', '性': 'せい', '合': 'ごう',
+            '感': 'かん', '六': 'ろく', '鳴': 'めい', '体': 'たい',
+            '孤': 'こ', '単': 'たん', '慎': 'しん', '重': 'ちょう', '警': 'けい',
+            '戒': 'かい', '深': 'しん', '慮': 'りょ', '大': 'だい', '胆': 'たん',
+            '勇': 'ゆう', '猛': 'もう', '果': 'か', '敢': 'かん', '火': 'か',
+            '焔': 'えん', '水': 'すい', '流': 'りゅう', '風': 'ふう', '嵐': 'あらし',
+            '翔': 'しょう', '土': 'ど', '岩': 'がん', '雷': 'らい', '電': 'でん',
+            '閃': 'せん', '光': 'こう', '聖': 'せい', '輝': 'き', '闇': 'やみ',
+            '影': 'えい', '黒': 'こく', '森': 'しん', '樹': 'じゅ', '緑': 'りょく',
+            '星': 'せい', '宙': 'ちゅう', '機': 'き', '鋼': 'こう', '械': 'かい',
+            '時': 'じ', '刻': 'こく', '瞬': 'しゅん', '燃': 'ねん', '焼': 'しょう',
+            '爆': 'ばく', '漆': 'しつ', '明': 'めい', '海': 'かい',
+            '密': 'みつ', '林': 'りん', '銀': 'ぎん', '河': 'が', '回': 'かい',
+            '路': 'ろ', '撃': 'げき', '凍': 'とう', '結': 'けつ', '操': 'そう',
+            '暗': 'あん', '淵': 'えん', '第': 'だい', '暴': 'ぼう', '走': 'そう',
+            '落': 'らく', '永': 'えい', '劫': 'ごう', '天': 'てん',
+            '究': 'きゅう', '真': 'しん', '法': 'ほう', '支': 'し',
+            '配': 'はい', '威': 'い', '権': 'けん', '神': 'しん', '禁': 'きん',
+            '秘': 'ひ', '虚': 'きょ', '混': 'こん', '沌': 'とん', '霊': 'れい',
+            '一': 'いち', '間': 'かん', '劣': 'れつ', '位': 'い',
+            '人': 'じん', '上': 'じょう', '向': 'こう',
+            
+            // 🎯 修正・追加文字（「直」含む）
+            '直': 'ちょく', '能': 'のう', '力': 'りょく', '世': 'せ', '界': 'かい',
+            '空': 'くう', '間': 'かん', '次': 'じ', '元': 'げん', '超': 'ちょう',
+            '越': 'えつ', '化': 'か', '変': 'へん', '転': 'てん', '換': 'かん',
+            '強': 'きょう', '弱': 'じゃく', '速': 'そく', '遅': 'ち', '高': 'たか',
+            '低': 'てい', '新': 'しん', '古': 'こ', '今': 'こん', '昔': 'むかし',
+            '未': 'み', '来': 'らい', '過': 'か', '去': 'きょ', '現': 'げん',
+            '在': 'ざい', '存': 'そん', '無': 'む', '有': 'ゆう', '生': 'せい',
+            '死': 'し', '始': 'し', '終': 'しゅう', '開': 'かい', '閉': 'へい',
+            '出': 'しゅつ', '入': 'にゅう', '内': 'ない', '外': 'がい', '中': 'ちゅう',
+            '東': 'とう', '西': 'せい', '南': 'なん', '北': 'ほく', '上': 'じょう',
+            '下': 'か', '左': 'さ', '右': 'う', '前': 'ぜん', '後': 'ご',
+            '表': 'ひょう', '裏': 'うら', '正': 'せい', '逆': 'ぎゃく', '反': 'はん',
+            '同': 'どう', '異': 'い', '似': 'じ', '違': 'い', '等': 'とう',
+            '平': 'へい', '均': 'きん', '差': 'さ', '別': 'べつ', '個': 'こ',
+            '全': 'ぜん', '部': 'ぶ', '半': 'はん', '少': 'しょう', '多': 'た',
+            '大': 'だい', '小': 'しょう', '細': 'さい', '太': 'た', '細': 'ほそ',
+            '長': 'ちょう', '短': 'たん', '広': 'こう', '狭': 'きょう', '深': 'しん',
+            '浅': 'あさ', '重': 'じゅう', '軽': 'けい', '硬': 'こう', '軟': 'なん',
+            '熱': 'ねつ', '冷': 'れい', '温': 'おん', '涼': 'りょう', '暖': 'だん',
+            '寒': 'かん', '明': 'めい', '暗': 'あん', '亮': 'りょう', '暗': 'くら',
+            '清': 'せい', '濁': 'だく', '純': 'じゅん', '混': 'こん', '単': 'たん',
+            '複': 'ふく', '簡': 'かん', '難': 'なん', '易': 'い', '安': 'あん',
+            '危': 'き', '険': 'けん', '安': 'あん', '全': 'ぜん', '良': 'りょう',
+            '悪': 'あく', '善': 'ぜん', '美': 'び', '醜': 'しゅう', '正': 'ただ',
+            '誤': 'ご', '真': 'しん', '偽': 'ぎ', '実': 'じつ', '虚': 'きょ',
+            
+            // よく使われる追加文字
+            '知': 'ち', '識': 'しき', '学': 'がく', '習': 'しゅう', '練': 'れん',
+            '技': 'ぎ', '能': 'のう', '才': 'さい', '専': 'せん', '門': 'もん',
+            '業': 'ぎょう', '職': 'しょく', '働': 'どう', '仕': 'し', '事': 'じ',
+            '会': 'かい', '社': 'しゃ', '組': 'そ', '織': 'しき', '団': 'だん',
+            '体': 'たい', '集': 'しゅう', '合': 'ごう', '場': 'ば', '所': 'しょ',
+            '地': 'ち', '場': 'じょう', '点': 'てん', '線': 'せん', '面': 'めん',
+            '角': 'かく', '方': 'ほう', '向': 'こう', '側': 'がわ', '辺': 'へん',
+            '周': 'しゅう', '囲': 'い', '内': 'うち', '外': 'そと', '際': 'さい',
+            '端': 'たん', '先': 'せん', '末': 'まつ', '頭': 'とう', '尾': 'び',
+            '首': 'しゅ', '足': 'そく', '手': 'て', '指': 'し', '爪': 'そう',
+            '目': 'もく', '鼻': 'び', '口': 'こう', '耳': 'じ', '舌': 'ぜつ',
+            '歯': 'し', '骨': 'こつ', '肉': 'にく', '皮': 'ひ', '毛': 'もう',
+            '血': 'けつ', '汗': 'かん', '涙': 'るい', '息': 'そく', '声': 'せい',
+            
+            // 複合語（よく使われるもの）
+            '無謬': 'むびゅう', '符號': 'ふごう', '調理': 'ちょうり', '饗宴': 'きょうえん',
+            '食材': 'しょくざい', '烹飪': 'ほうじん', '美味': 'びみ', '芳醇': 'ほうじゅん',
+            '絶品': 'ぜっぴん', '匠技': 'しょうぎ', '絶響': 'ぜっきょう', '律動': 'りつどう',
+            '和音': 'わおん', '旋律': 'せんりつ', '共鳴': 'きょうめい', '協奏': 'きょうそう',
+            '交響': 'こうきょう', '調律': 'ちょうりつ', '音階': 'おんかい', '韻律': 'いんりつ',
+            '説得': 'せっとく', '交渉': 'こうしょう', '信頼': 'しんらい', '魅惑': 'みわく',
+            '契約': 'けいやく', '商談': 'しょうだん', '成約': 'せいやく', '誘導': 'ゆうどう',
+            '心理': 'しんり', '駆引': 'かけひき', '美學': 'びがく', '創造': 'そうぞう',
+            '視覺': 'しかく', '構成': 'こうせい', '色彩': 'しきさい', '造形': 'ぞうけい',
+            '審美': 'しんび', '意匠': 'いしょう', '装飾': 'そうしょく', '芸術': 'げいじゅつ',
+            '究極': 'きゅうきょく', '無限': 'むげん', '絶対': 'ぜったい', '完全': 'かんぜん',
+            '至高': 'しこう', '真理': 'しんり', '法則': 'ほうそく', '支配': 'しはい',
+            
+            // 特別組み合わせ用
+            '完炎': 'かんえん', '精火': 'せいか', '無瑕炎': 'むかえん',
+            '冷炎': 'れいえん', '氷火': 'ひょうか', '静炎': 'せいえん',
+            '自機': 'じき', '奔機': 'ほんき', '暴機': 'ぼうき',
+            '静雷': 'せいらい', '慎雷': 'しんらい', '深雷': 'しんらい',
+            '熱氷': 'ねつひょう', '炎氷': 'えんぴょう', '情氷': 'じょうひょう',
+            '論闇': 'ろんあん', '理闇': 'りあん', '合闇': 'ごうあん',
+            '直光': 'ちょっこう', '感光': 'かんこう', '霊光': 'れいこう',
+            '整嵐': 'せいらん', '規嵐': 'きらん', '序嵐': 'じょらん',
+            '勇森': 'ゆうしん', '胆森': 'たんしん', '果森': 'かしん',
+            '孤星': 'こせい', '独星': 'どくせい', '単星': 'たんせい',
+            '協音': 'きょうおん', '調音': 'ちょうおん',
+            '創時': 'そうじ', '想時': 'そうじ', '発時': 'はつじ'
+        };
+
+        function generateDomain() {
+            const rawSkill = document.getElementById('skill').value.trim();
+            const personality = document.getElementById('personality').value;
+            const element = document.getElementById('element').value;
+            
+            if (!rawSkill) {
+                alert('得意分野を入力してください');
+                return;
+            }
+
+            // 🎯 スキルを正規化
+            const normalizedSkill = normalizeSkill(rawSkill);
+
+            let template = domainTemplates[normalizedSkill] || {
+                chars: ['無限', '絶対', '完全', '至高', '究極', '真理', '法則', '支配'],
+                environments: ['神秘的な空間', '超常現象に満ちた場所', '現実を超越した次元'],
+                abilities: ['すべての行動が必中となり', '能力が極限まで高められ', '相手を圧倒する力を得る']
+            };
+
+            let stars = 1;
+            let domainChars = [];
+            let environment = '';
+            let effect = '';
+
+            // 特別な組み合わせをチェック（20%の確率）
+            const comboKey = `${personality}_${element}`;
+            const specialCombo = specialCombinations[comboKey];
+            
+            if (specialCombo && Math.random() < 0.2) {
+                // 特別組み合わせから選択して4-5文字にする
+                const specialBase = specialCombo.chars[Math.floor(Math.random() * specialCombo.chars.length)];
+                const suffix = suffixes[Math.floor(Math.random() * suffixes.length)];
+                
+                // 4-5文字に調整
+                if (specialBase.length === 2) {
+                    // 2文字ベース + 何か + suffix = 4文字 or 2文字ベース + suffix = 3文字→4文字に
+                    const extraChar = template.chars[Math.floor(Math.random() * template.chars.length)];
+                    if (extraChar.length === 1) {
+                        domainChars = [specialBase + extraChar + suffix];
+                    } else {
+                        domainChars = [specialBase + suffix];
+                    }
+                } else {
+                    domainChars = [specialBase + suffix];
+                }
+                
+                environment = specialCombo.environment;
+                stars = specialCombo.stars;
+            } else {
+                // 通常生成（確実に4-5文字）
+                const targetLength = Math.random() > 0.5 ? 4 : 5;
+                
+                // レア度判定
+                if (personality && element) {
+                    stars = 3;
+                    if (Math.random() < 0.3) stars = 4;
+                    if (Math.random() < 0.05) stars = 5;
+                } else if (personality || element) {
+                    stars = 2;
+                    if (Math.random() < 0.2) stars = 3;
+                }
+                
+                // 1文字要素を集める
+                const singleChars = ['無', '絶', '完', '至', '究', '真', '法', '支', '精', '密', '創', '発', '独', '熱', '激', '冷', '静', '規', '秩', '自', '奔', '論', '理', '直', '感', '協', '調', '孤', '単', '慎', '大', '勇', '炎', '火', '水', '氷', '風', '雷', '電', '光', '聖', '闇', '影', '森', '樹', '星', '機', '鋼', '音', '響', '時', '刻'];
+                
+                // targetLength-1文字分のコンテンツ + 1文字のsuffix
+                for (let i = 0; i < targetLength - 1; i++) {
+                    if (i === 0) {
+                        // 最初は専門分野から
+                        const skillChar = template.chars[Math.floor(Math.random() * template.chars.length)];
+                        if (skillChar.length === 1) {
+                            domainChars.push(skillChar);
+                        } else {
+                            // 2文字の場合は分解するか、1文字に置き換え
+                            domainChars.push(singleChars[Math.floor(Math.random() * singleChars.length)]);
+                        }
+                    } else {
+                        // 性格・要素・その他から1文字ずつ
+                        domainChars.push(singleChars[Math.floor(Math.random() * singleChars.length)]);
+                    }
+                }
+            }
+            
+            // 最後に場所を表す文字（必ず1文字）
+            if (domainChars.length === 1 && domainChars[0].length > 3) {
+                // 既に長い場合はそのまま
+            } else {
+                domainChars.push(suffixes[Math.floor(Math.random() * suffixes.length)]);
+            }
+            
+            const finalDomainName = domainChars.join('');
+            
+            // 文字数チェック（4-5文字でない場合は調整）
+            let adjustedName = finalDomainName;
+            if (finalDomainName.length < 4) {
+                // 短すぎる場合は文字を追加
+                const singleChars = ['無', '絶', '完', '至', '究', '真', '法', '支', '精', '密', '創', '発', '独', '熱', '激', '冷', '静', '規', '秩', '自', '奔', '論', '理', '直', '感', '協', '調', '孤', '単', '慎', '大', '勇', '炎', '火', '水', '氷', '風', '雷', '電', '光', '聖', '闇', '影', '森', '樹', '星', '機', '鋼', '音', '響', '時', '刻'];
+                adjustedName = finalDomainName + singleChars[Math.floor(Math.random() * singleChars.length)];
+            } else if (finalDomainName.length > 5) {
+                // 長すぎる場合は切り詰め
+                adjustedName = finalDomainName.substring(0, 5);
+            }
+            
+            const domainName = `『${adjustedName}』`;
+            const reading = generateReading(adjustedName);
+            
+            // 🎯 分野に特化した面白い環境と効果を生成
+            const domainSetting = domainSettings[normalizedSkill];
+            if (domainSetting && environment === '') {
+                environment = domainSetting.environments[Math.floor(Math.random() * domainSetting.environments.length)];
+                effect = domainSetting.effects[Math.floor(Math.random() * domainSetting.effects.length)];
+            } else if (environment === '') {
+                // フォールバック
+                environment = template.environments[Math.floor(Math.random() * template.environments.length)];
+                effect = 'この分野における能力が神域レベルまで高まり、あらゆる障害を乗り越える力を得る';
+            }
+            
+            // 性格・要素による修飾を追加
+            let modifiers = [];
+            if (personality && personalityModifiers[personality]) {
+                const mod = personalityModifiers[personality];
+                modifiers.push(mod[Math.floor(Math.random() * mod.length)]);
+            }
+            if (element && elementModifiers[element]) {
+                const mod = elementModifiers[element];
+                modifiers.push(mod[Math.floor(Math.random() * mod.length)]);
+            }
+            
+            const modifierText = modifiers.length > 0 ? modifiers.join('') : '';
+            
+            // 🎯 最終的な説明文と効果文
+            const description = `${environment}が展開される。この領域内では現実の法則が書き換えられ、${normalizedSkill}の常識が覆される。`;
+            
+            const finalEffect = `【必中効果】${modifierText}${effect}。この奇跡的な空間では、失敗という概念が消失し、${normalizedSkill}における全ての行動が必然的に最高の結果をもたらす。`;
+
+            // レア度表示
+            const starDisplay = '★'.repeat(stars) + '☆'.repeat(5 - stars);
+            document.getElementById('rarityStars').textContent = starDisplay;
+            document.getElementById('rarityStars').className = `rarity-stars star-${stars}`;
+            document.getElementById('rarityText').textContent = rarityNames[stars];
+
+            document.getElementById('domainName').textContent = `領域発動：${domainName}`;
+            document.getElementById('reading').textContent = `（${reading}）`;
+            document.getElementById('domainDescription').textContent = description;
+            document.getElementById('domainEffect').textContent = finalEffect;
+            document.getElementById('result').style.display = 'block';
+
+            // 結果を保存
+            currentResult = {
+                domainName: `領域発動：${domainName}`,
+                reading: `（${reading}）`,
+                rarity: `${starDisplay} ${rarityNames[stars]}`,
+                description: description,
+                effect: finalEffect,
+                originalSkill: rawSkill,
+                normalizedSkill: normalizedSkill,
+                personality: personality,
+                element: element
+            };
+        }
+
+        function generateReading(kanji) {
+            // まず複合語として辞書に登録されているかチェック
+            if (kanjiReadings[kanji]) {
+                return kanjiReadings[kanji];
+            }
+            
+            // 複合語がない場合は、よくある組み合わせを先にチェック
+            const commonCompounds = ['究極', '無限', '創造', '絶対', '完全', '至高', '真理', '法則', '支配', '無謬', '符號', '調理', '絶響', '律動'];
+            for (let compound of commonCompounds) {
+                if (kanji.includes(compound)) {
+                    const beforeCompound = kanji.substring(0, kanji.indexOf(compound));
+                    const afterCompound = kanji.substring(kanji.indexOf(compound) + compound.length);
+                    const reading = generateReading(beforeCompound) + kanjiReadings[compound] + generateReading(afterCompound);
+                    return reading;
+                }
+            }
+            
+            // 1文字ずつ分解して読み
+            return kanji.split('').map(char => kanjiReadings[char] || char).join('');
+        }
+
+        // アプリを開く（修正済み）
+        function openApp() {
+            window.open(APP_URL, '_blank');
+        }
+
+        // コピー機能（修正済み）
+        function copyToClipboard() {
+            if (!currentResult) return;
+            
+            const text = `${currentResult.domainName}${currentResult.reading}
+${currentResult.rarity}
+
+${currentResult.description}
+
+${currentResult.effect}
+
+#領域発動メーカー
+${APP_URL}`;
+
+            navigator.clipboard.writeText(text).then(() => {
+                showSuccessMessage('クリップボードにコピーしました！');
+            }).catch(() => {
+                // フォールバック
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showSuccessMessage('クリップボードにコピーしました！');
+            });
+        }
+
+        // テキストファイルダウンロード（修正済み）
+        function downloadAsText() {
+            if (!currentResult) return;
+            
+            const text = `領域発動メーカー 診断結果
+========================================
+
+${currentResult.domainName}${currentResult.reading}
+${currentResult.rarity}
+
+【領域の説明】
+${currentResult.description}
+
+【効果】
+${currentResult.effect}
+
+【入力情報】
+得意分野：${currentResult.originalSkill}
+性格：${currentResult.personality || '未選択'}
+要素：${currentResult.element || '未選択'}
+
+診断日時：${new Date().toLocaleString('ja-JP')}
+アプリ版：${APP_URL}
+生成元：領域発動メーカー
+`;
+
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `領域発動_${currentResult.domainName.replace(/[：『』]/g, '').replace('領域発動', '')}_${new Date().toLocaleDateString('ja-JP').replace(/\//g, '')}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showSuccessMessage('テキストファイルをダウンロードしました！');
+        }
+
+        // 画像ダウンロード（修正済み）
+        function downloadAsImage() {
+            if (!currentResult) return;
+            
+            const canvas = document.getElementById('imageCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // キャンバスサイズ設定
+            canvas.width = 800;
+            canvas.height = 1000;
+            
+            // 背景色
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#1a1a2e');
+            gradient.addColorStop(1, '#16213e');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 枠線
+            ctx.strokeStyle = '#8b5cf6';
+            ctx.lineWidth = 4;
+            ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+            
+            // テキスト描画設定
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'center';
+            
+            let y = 100;
+            
+            // タイトル
+            ctx.font = 'bold 32px serif';
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText('領域発動メーカー', canvas.width / 2, y);
+            y += 80;
+            
+            // レア度
+            ctx.font = '24px serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(currentResult.rarity, canvas.width / 2, y);
+            y += 60;
+            
+            // 領域名
+            ctx.font = 'bold 48px serif';
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText(currentResult.domainName, canvas.width / 2, y);
+            y += 60;
+            
+            // 読み方
+            ctx.font = '20px serif';
+            ctx.fillStyle = '#9ca3af';
+            ctx.fillText(currentResult.reading, canvas.width / 2, y);
+            y += 80;
+            
+            // 説明文（改行処理）
+            ctx.font = '18px serif';
+            ctx.fillStyle = '#e5e7eb';
+            ctx.textAlign = 'left';
+            const maxWidth = canvas.width - 80;
+            
+            // 説明文を改行
+            const descLines = wrapText(ctx, currentResult.description, maxWidth);
+            for (let line of descLines) {
+                ctx.fillText(line, 40, y);
+                y += 30;
+            }
+            y += 30;
+            
+            // 効果文（改行処理）
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillText('【必中効果】', 40, y);
+            y += 30;
+            
+            ctx.fillStyle = '#e5e7eb';
+            const effectLines = wrapText(ctx, currentResult.effect, maxWidth);
+            for (let line of effectLines) {
+                ctx.fillText(line, 40, y);
+                y += 30;
+            }
+            
+            // フッター（修正済み）
+            y = canvas.height - 100;
+            ctx.font = '16px serif';
+            ctx.fillStyle = '#8b5cf6';
+            ctx.textAlign = 'center';
+            ctx.fillText('診断日時：' + new Date().toLocaleString('ja-JP'), canvas.width / 2, y);
+            y += 25;
+            ctx.fillText('アプリで診断: ' + APP_URL, canvas.width / 2, y);
+            
+            // ダウンロード
+            canvas.toBlob((blob) => {
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `領域発動_${currentResult.domainName.replace(/[：『』]/g, '').replace('領域発動', '')}_${new Date().toLocaleDateString('ja-JP').replace(/\//g, '')}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                showSuccessMessage('画像をダウンロードしました！');
+            });
+        }
+
+        // テキスト改行処理
+        function wrapText(ctx, text, maxWidth) {
+            const lines = [];
+            const chars = text.split('');
+            let currentLine = '';
+            
+            for (let char of chars) {
+                const testLine = currentLine + char;
+                const metrics = ctx.measureText(testLine);
+                
+                if (metrics.width > maxWidth && currentLine !== '') {
+                    lines.push(currentLine);
+                    currentLine = char;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            
+            if (currentLine) {
+                lines.push(currentLine);
+            }
+            
+            return lines;
+        }
+
+        // Twitterシェア（修正済み）
+        function shareToTwitter() {
+            if (!currentResult) return;
+            
+            const text = `私の領域はこれでした！
+
+${currentResult.domainName}${currentResult.reading}
+${currentResult.rarity}
+
+あなたの領域も診断してみて！`;
+            
+            const hashtags = '領域発動メーカー,診断メーカー';
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(APP_URL)}&hashtags=${encodeURIComponent(hashtags)}`;
+            window.open(url, '_blank');
+        }
+
+        // 一般的なシェア（修正済み）
+        function shareGeneral() {
+            if (!currentResult) return;
+            
+            const shareData = {
+                title: '領域発動メーカー診断結果',
+                text: `${currentResult.domainName}${currentResult.reading}\n${currentResult.rarity}`,
+                url: APP_URL
+            };
+            
+            if (navigator.share) {
+                navigator.share(shareData);
+            } else {
+                // Web Share APIが使えない場合はクリップボードにコピー
+                copyToClipboard();
+            }
+        }
+
+        // 成功メッセージ表示
+        function showSuccessMessage(message) {
+            const messageElement = document.getElementById('successMessage');
+            messageElement.textContent = message;
+            messageElement.style.display = 'block';
+            
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+            }, 2000);
+        }
+
+        // エンターキーで実行
+        document.getElementById('skill').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateDomain();
+            }
+        });
+    </script>
+</body>
+</html>
